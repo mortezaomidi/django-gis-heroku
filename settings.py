@@ -34,6 +34,7 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.gis',
 ]
 THIRD_PARTY_APPS = [
     'django_extensions',  # all kinds of goodness
@@ -42,6 +43,7 @@ THIRD_PARTY_APPS = [
 ]
 LOCAL_APPS = [
     'taskapp',
+    'demoapp',
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -60,7 +62,10 @@ MIDDLEWARE = [
 
 DATABASES = {}
 DATABASES['default'] = dj_database_url.config(conn_max_age=600,
-                                              default='postgres://localhost:5432/{}'.format(APP_NAME))
+                                              default='postgis://localhost:5432/{}'.format(APP_NAME))
+
+# VERY IMPORTANT BECAUSE HEROKU WILL USE 'postgres' AS THE SCHEME
+DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 REDIS_LOCATION = '{0}/{1}'.format(os.getenv('REDIS_URL', 'redis://127.0.0.1:6379'), 0)
 CACHES = {
@@ -134,3 +139,7 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH')
+GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH')
+
